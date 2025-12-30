@@ -617,16 +617,30 @@
             const trades = getTrades();
             if (trades.length === 0) return alert('Aucun trade à exporter');
 
-            const headers = ['Date', 'Symbole', 'Direction', 'Signal', 'Entrée', 'SL', 'TP', 'Session', 'Timeframe', 'Résultat', 'Notes'];
+            // Using semicolon as delimiter for French Excel
+            const SEP = ';';
+            const headers = ['Date', 'Symbole', 'Direction', 'Signal', 'Entree', 'SL', 'TP', 'Session', 'Timeframe', 'Resultat', 'Notes'];
+
             const csvContent = [
-                headers.join(','),
+                headers.join(SEP),
                 ...trades.map(t => {
                     const sigs = Array.isArray(t.signalType) ? t.signalType.join('+') : t.signalType;
+                    const notes = (t.notes || '').replace(/"/g, '""');
                     return [
-                        t.date, t.symbol, t.direction, sigs, t.entryPrice, t.stopLoss, t.takeProfit, t.session, t.timeframe, t.result, `"${(t.notes || '').replace(/"/g, '""')}"`
-                    ].join(',')
+                        t.date,
+                        t.symbol,
+                        t.direction,
+                        sigs,
+                        t.entryPrice,
+                        t.stopLoss || '',
+                        t.takeProfit || '',
+                        t.session,
+                        t.timeframe,
+                        t.result,
+                        `"${notes}"`
+                    ].join(SEP);
                 })
-            ].join('\n');
+            ].join('\r\n');
 
             // Add UTF-8 BOM for proper encoding in Excel
             const BOM = '\uFEFF';
