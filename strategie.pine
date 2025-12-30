@@ -1,0 +1,252 @@
+//@version=6
+strategy("ICT Assistant: Backtest Strategy [Expert]", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=1, currency=currency.USD)
+
+// ==========================================
+// 0. TIMEFRAME DETECTION & AUTO-ADAPTATION
+// ==========================================
+tf_mins = timeframe.in_seconds() / 60
+
+is_scalping = tf_mins <= 5
+is_intraday = tf_mins > 5 and tf_mins <= 60
+is_swing = tf_mins > 60 and tf_mins <= 240
+is_position = tf_mins > 240
+
+auto_pivot_lookback = is_scalping ? 5 : is_intraday ? 10 : is_swing ? 15 : 20
+auto_ob_lookback = is_scalping ? 3 : is_intraday ? 5 : is_swing ? 8 : 10
+auto_bos_lookback = is_scalping ? 5 : is_intraday ? 8 : is_swing ? 12 : 15
+
+// ==========================================
+// 1. CONFIGURATION - DARK MODE OPTIMIZED
+// ==========================================
+grp_time    = "Time & Session"
+useKZ       = input.bool(true, "Filter by Killzones (Intraday only)", group=grp_time)
+kz_london   = input.session("0200-0500", "London", group=grp_time)
+kz_ny       = input.session("0700-1100", "New York", group=grp_time)
+kz_asia     = input.session("2000-0000", "Asian (optional)", group=grp_time)
+use_asia_kz = input.bool(false, "Include Asian Session", group=grp_time)
+
+// BACKTESTING DATE RANGE
+grp_backtest = "Backtesting Date Range"
+start_date = input.time(timestamp("1 Jan 2024 00:00 +0000"), "Start Date", group=grp_backtest)
+end_date = input.time(timestamp("1 Jan 2030 00:00 +0000"), "End Date", group=grp_backtest)
+in_date_range = time >= start_date and time <= end_date
+
+grp_liq     = "Liquidity & Structure"
+use_auto_params = input.bool(true, "Auto-adapt to Timeframe", group=grp_liq)
+liq_len_manual = input.int(10, "Pivot Lookback (manual)", group=grp_liq, minval=3, maxval=50)
+// DARK MODE COLORS
+col_bsl     = input.color(#FF6B6B, "BSL Color (Red Coral)", group=grp_liq)
+col_ssl     = input.color(#4ECDC4, "SSL Color (Cyan)", group=grp_liq)
+col_bos_bull = input.color(#00FF88, "BOS Bull Color", group=grp_liq)
+col_bos_bear = input.color(#FF4757, "BOS Bear Color", group=grp_liq)
+
+liq_len = use_auto_params ? auto_pivot_lookback : liq_len_manual
+
+grp_ict     = "ICT Zones (FVG/BPR)"
+col_fvg     = input.color(color.new(#FFE66D, 75), "FVG Box (Gold)", group=grp_ict)
+col_bpr     = input.color(color.new(#A855F7, 65), "BPR Box (Electric Purple)", group=grp_ict)
+col_do      = input.color(#818CF8, "Daily Open (Indigo)", group=grp_ict)
+col_fvg_bull_candle = input.color(#FFD93D, "FVG Bull Candle (Gold)", group=grp_ict)
+col_fvg_bear_candle = input.color(#FF8C42, "FVG Bear Candle (Orange)", group=grp_ict)
+
+// ==========================================
+// 1B. ORDER BLOCKS CONFIGURATION
+// ==========================================
+grp_ob      = "Order Blocks"
+show_ob     = input.bool(true, "Show Order Blocks", group=grp_ob)
+ob_lookback_manual = input.int(5, "OB Confirmation Candles (manual)", minval=1, maxval=20, group=grp_ob)
+ob_proximity_pct = input.float(0.5, "OB Proximity to Liquidity (%)", minval=0.1, maxval=2.0, step=0.1, group=grp_ob)
+col_ob_bull = input.color(color.new(#38BDF8, 70), "Bullish OB Box (Sky Blue)", group=grp_ob)
+col_ob_bear = input.color(color.new(#FB7185, 70), "Bearish OB Box (Pink Coral)", group=grp_ob)
+
+ob_lookback = use_auto_params ? auto_ob_lookback : ob_lookback_manual
+
+// ==========================================
+// 1C. RISK MANAGEMENT CONFIGURATION
+// ==========================================
+grp_risk    = "Risk Management"
+show_sltp   = input.bool(true, "Show SL/TP Levels", group=grp_risk)
+atr_length  = input.int(14, "ATR Length", minval=1, group=grp_risk)
+atr_sl_mult = input.float(1.5, "SL = ATR ×", minval=0.5, maxval=5.0, step=0.1, group=grp_risk)
+rr_ratio    = input.float(2.0, "Risk:Reward Ratio", minval=1.0, maxval=5.0, step=0.5, group=grp_risk)
+account_size = input.float(10000, "Account Size ($)", minval=100, group=grp_risk)
+risk_percent = input.float(1.0, "Risk per Trade (%)", minval=0.1, maxval=10.0, step=0.1, group=grp_risk)
+
+// ==========================================
+// 2. DAILY/WEEKLY OPEN (ADAPTATIF)
+// ==========================================
+reference_tf = is_position ? (tf_mins >= 10080 ? "M" : "W") : "D"
+reference_label = is_position ? (tf_mins >= 10080 ? "Monthly Open" : "Weekly Open") : "Daily Open"
+
+refOpen = request.security(syminfo.tickerid, reference_tf, open, lookahead=barmerge.lookahead_on)
+plot(refOpen, "Reference Open Line", color=col_do, linewidth=2)
+
+// ==========================================
+// 3. LIQUIDITY LINES + TRACK LAST LEVELS
+// ==========================================
+ph = ta.pivothigh(high, liq_len, liq_len)
+pl = ta.pivotlow(low, liq_len, liq_len)
+
+var float last_bsl = na
+var float last_ssl = na
+
+if not na(ph)
+    last_bsl := ph
+    line.new(bar_index[liq_len], ph, bar_index + 10, ph, color=col_bsl, style=line.style_dotted)
+    label.new(bar_index + 10, ph, "BSL", color=color.new(col_bsl, 100), textcolor=col_bsl, style=label.style_label_left, size=size.tiny)
+
+if not na(pl)
+    last_ssl := pl
+    line.new(bar_index[liq_len], pl, bar_index + 10, pl, color=col_ssl, style=line.style_dotted)
+    label.new(bar_index + 10, pl, "SSL", color=color.new(col_ssl, 100), textcolor=col_ssl, style=label.style_label_left, size=size.tiny)
+
+// ==========================================
+// 4. MARKET STRUCTURE (BOS WITH RECTANGLES)
+// ==========================================
+var float swing_high = na
+var float swing_low = na
+
+if not na(ph)
+    swing_high := ph
+if not na(pl)
+    swing_low := pl
+
+bos_bull = ta.crossover(close, swing_high)
+bos_bear = ta.crossunder(close, swing_low)
+
+// BOS Visual: Rectangle + Label
+if bos_bull
+    box.new(bar_index - 5, swing_high, bar_index, high, 
+            bgcolor=color.new(col_bos_bull, 85), border_color=col_bos_bull, border_width=2,
+            text="⬆ BOS", text_color=col_bos_bull, text_size=size.small)
+    line.new(bar_index - 10, swing_high, bar_index, swing_high, color=col_bos_bull, width=2)
+
+if bos_bear
+    box.new(bar_index - 5, low, bar_index, swing_low, 
+            bgcolor=color.new(col_bos_bear, 85), border_color=col_bos_bear, border_width=2,
+            text="⬇ BOS", text_color=col_bos_bear, text_size=size.small)
+    line.new(bar_index - 10, swing_low, bar_index, swing_low, color=col_bos_bear, width=2)
+
+// ==========================================
+// 5. ZONES (BPR & FVG) + CANDLE COLORING
+// ==========================================
+fvg_bull = low[0] > high[2]
+fvg_bear = high[0] < low[2]
+
+// Candle coloring for FVG
+barcolor(fvg_bull ? col_fvg_bull_candle : na, title="FVG Bull Candle")
+barcolor(fvg_bear ? col_fvg_bear_candle : na, title="FVG Bear Candle")
+
+bool bpr_bull = false
+bool bpr_bear = false
+
+if fvg_bull
+    for i = 1 to 5
+        if fvg_bear[i] and high[i] > low[0] and low[i+2] < high[2]
+            bpr_bull := true
+if fvg_bear
+    for i = 1 to 5
+        if fvg_bull[i] and low[i] < high[0] and high[i+2] > low[2]
+            bpr_bear := true
+
+if bpr_bull
+    box.new(bar_index[2], high[2], bar_index + 5, low[0], border_color=color.new(#A855F7, 50), bgcolor=col_bpr, text="BPR (+)", text_color=color.white, text_size=size.tiny)
+else if fvg_bull
+    box.new(bar_index[2], high[2], bar_index + 5, low[0], border_color=color.new(#FFE66D, 50), bgcolor=col_fvg, text="FVG", text_color=#FFE66D, text_size=size.tiny)
+
+if bpr_bear
+    box.new(bar_index[2], low[2], bar_index + 5, high[0], border_color=color.new(#A855F7, 50), bgcolor=col_bpr, text="BPR (-)", text_color=color.white, text_size=size.tiny)
+else if fvg_bear
+    box.new(bar_index[2], low[2], bar_index + 5, high[0], border_color=color.new(#FFE66D, 50), bgcolor=col_fvg, text="FVG", text_color=#FFE66D, text_size=size.tiny)
+
+// ==========================================
+// 6. ORDER BLOCKS - FILTERED BY LIQUIDITY ZONES
+// ==========================================
+is_bearish_candle = close[1] < open[1]
+is_bullish_engulf = close > open and close > high[1]
+ob_bull_detected = is_bearish_candle and is_bullish_engulf
+
+is_bullish_candle = close[1] > open[1]
+is_bearish_engulf = close < open and close < low[1]
+ob_bear_detected = is_bullish_candle and is_bearish_engulf
+
+// OB Filtering by liquidity proximity
+ob_near_bsl = not na(last_bsl) and math.abs(close - last_bsl) / close * 100 < ob_proximity_pct
+ob_near_ssl = not na(last_ssl) and math.abs(close - last_ssl) / close * 100 < ob_proximity_pct
+
+bos_lookback = use_auto_params ? auto_bos_lookback : 8
+recent_bos_bull = ta.barssince(bos_bull) < bos_lookback
+recent_bos_bear = ta.barssince(bos_bear) < bos_lookback
+
+ob_bull_valid = ob_bull_detected and (ob_near_ssl or recent_bos_bull)
+ob_bear_valid = ob_bear_detected and (ob_near_bsl or recent_bos_bear)
+
+if show_ob and ob_bull_valid
+    box.new(bar_index[1], high[1], bar_index + 10, low[1], 
+            bgcolor=col_ob_bull, border_color=#38BDF8, border_width=2,
+            text="OB ✓", text_color=color.white, text_size=size.tiny)
+
+if show_ob and ob_bear_valid
+    box.new(bar_index[1], high[1], bar_index + 10, low[1], 
+            bgcolor=col_ob_bear, border_color=#FB7185, border_width=2,
+            text="OB ✓", text_color=color.white, text_size=size.tiny)
+
+// ==========================================
+// 7. ATR & STOP LOSS / TAKE PROFIT
+// ==========================================
+atr_val = ta.atr(atr_length)
+sl_distance = atr_val * atr_sl_mult
+tp_distance = sl_distance * rr_ratio
+
+// Position size calculation
+risk_amount = account_size * (risk_percent / 100)
+position_size = risk_amount / sl_distance
+
+// ==========================================
+// 8. STRATEGY EXECUTION
+// ==========================================
+in_london = not na(time(timeframe.period, kz_london, "America/New_York"))
+in_ny = not na(time(timeframe.period, kz_ny, "America/New_York"))
+in_asia = use_asia_kz and not na(time(timeframe.period, kz_asia, "America/New_York"))
+
+in_kz = is_position ? true : ((not useKZ) or in_london or in_ny or in_asia)
+
+// --- BUY CONDITIONS ---
+buy_cond = close < refOpen and in_kz and recent_bos_bull
+
+entry_buy_ob = buy_cond and ob_bull_valid
+entry_buy_bpr = buy_cond and bpr_bull and not ob_bull_valid
+entry_buy_fvg = buy_cond and fvg_bull and not bpr_bull and not ob_bull_valid
+
+any_buy_signal = entry_buy_ob or entry_buy_bpr or entry_buy_fvg
+
+// --- SELL CONDITIONS ---
+sell_cond = close > refOpen and in_kz and recent_bos_bear
+
+entry_sell_ob = sell_cond and ob_bear_valid
+entry_sell_bpr = sell_cond and bpr_bear and not ob_bear_valid
+entry_sell_fvg = sell_cond and fvg_bear and not bpr_bear and not ob_bear_valid
+
+any_sell_signal = entry_sell_ob or entry_sell_bpr or entry_sell_fvg
+
+// --- SYMBOL RESTRICTION ---
+s = syminfo.ticker
+is_valid_pair = str.contains(s, "EURUSD") or str.contains(s, "GBPUSD")
+
+// --- ORDER EXECUTION ---
+if in_date_range and is_valid_pair
+    if any_buy_signal
+        strategy.entry("Long", strategy.long, qty=position_size, comment=entry_buy_ob ? "OB Buy" : entry_buy_bpr ? "BPR Buy" : "FVG Buy")
+        strategy.exit("Exit Long", "Long", stop=close - sl_distance, limit=close + tp_distance)
+
+    if any_sell_signal
+        strategy.entry("Short", strategy.short, qty=position_size, comment=entry_sell_ob ? "OB Sell" : entry_sell_bpr ? "BPR Sell" : "FVG Sell")
+        strategy.exit("Exit Short", "Short", stop=close + sl_distance, limit=close - tp_distance)
+
+// Warning if wrong pair
+if not is_valid_pair and barstate.islast
+    label.new(bar_index, high, "⚠️ WRONG PAIR\nUse EURUSD or GBPUSD", color=#FF8C42, style=label.style_label_down, textcolor=color.white)
+
+// Signal visualization
+plotshape(any_buy_signal, title="Buy Signal", style=shape.triangleup, location=location.belowbar, color=#00FF88, size=size.small)
+plotshape(any_sell_signal, title="Sell Signal", style=shape.triangledown, location=location.abovebar, color=#FF4757, size=size.small)

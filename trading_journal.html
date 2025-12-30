@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Trading Journal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gray: {
+                            850: '#1f2937',
+                            900: '#111827',
+                            950: '#0B0F19',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Importing a nice font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-950 text-gray-100 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        <!-- Header -->
+        <header class="text-center p-6 bg-gray-900 rounded-2xl border border-gray-800 shadow-lg">
+            <h1
+                class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent mb-2">
+                📊 ICT Trading Journal
+            </h1>
+            <p class="text-gray-400">Suivez et analysez vos opportunités confirmées</p>
+        </header>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Total Trades -->
+            <div
+                class="bg-gray-900 border border-gray-800 p-6 rounded-xl text-center border-l-4 border-l-blue-500 shadow-md">
+                <div class="text-3xl font-bold mb-1" id="totalTrades">0</div>
+                <div class="text-sm text-gray-400 uppercase tracking-wider">Total Trades</div>
+            </div>
+            <!-- Wins -->
+            <div
+                class="bg-gray-900 border border-gray-800 p-6 rounded-xl text-center border-l-4 border-l-green-500 shadow-md">
+                <div class="text-3xl font-bold mb-1" id="winTrades">0</div>
+                <div class="text-sm text-gray-400 uppercase tracking-wider">Gagnants</div>
+            </div>
+            <!-- Losses -->
+            <div
+                class="bg-gray-900 border border-gray-800 p-6 rounded-xl text-center border-l-4 border-l-red-500 shadow-md">
+                <div class="text-3xl font-bold mb-1" id="lossTrades">0</div>
+                <div class="text-sm text-gray-400 uppercase tracking-wider">Perdants</div>
+            </div>
+            <!-- Win Rate -->
+            <div
+                class="bg-gray-900 border border-gray-800 p-6 rounded-xl text-center border-l-4 border-l-amber-500 shadow-md">
+                <div class="text-3xl font-bold mb-1" id="winRate">0%</div>
+                <div class="text-sm text-gray-400 uppercase tracking-wider">Win Rate</div>
+            </div>
+        </div>
+
+        <!-- New Trade Form -->
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-lg">
+            <h2 class="text-xl font-semibold text-blue-400 mb-6 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Ajouter une Opportunité Confirmée
+            </h2>
+
+            <form id="tradeForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Date</label>
+                        <input type="datetime-local" id="tradeDate" required
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Paire / Symbole</label>
+                        <input type="text" id="symbol" placeholder="EUR/USD" required
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all uppercase">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Direction</label>
+                        <select id="direction" required
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                            <option value="BUY">🟢 BUY</option>
+                            <option value="SELL">🔴 SELL</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Type de Signal</label>
+                        <select id="signalType" required
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                            <option value="OB">🔷 Order Block</option>
+                            <option value="BPR">🟣 BPR</option>
+                            <option value="FVG">🟡 FVG</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Prix d'Entrée</label>
+                        <input type="number" id="entryPrice" step="0.00001" placeholder="1.0850" required
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Stop Loss</label>
+                        <input type="number" id="stopLoss" step="0.00001" placeholder="1.0830"
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Take Profit</label>
+                        <input type="number" id="takeProfit" step="0.00001" placeholder="1.0890"
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Résultat</label>
+                        <select id="result"
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                            <option value="PENDING">⏳ En cours</option>
+                            <option value="WIN">✅ Gagnant</option>
+                            <option value="LOSS">❌ Perdant</option>
+                            <option value="BE">➖ Break Even</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Session</label>
+                        <select id="session"
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                            <option value="LONDON">🇬🇧 London</option>
+                            <option value="NEW_YORK">🇺🇸 New York</option>
+                            <option value="ASIAN">🇯🇵 Asian</option>
+                            <option value="OTHER">Autre</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-400">Timeframe</label>
+                        <select id="timeframe"
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                            <option value="1m">1 minute</option>
+                            <option value="5m">5 minutes</option>
+                            <option value="15m" selected>15 minutes</option>
+                            <option value="1H">1 heure</option>
+                            <option value="4H">4 heures</option>
+                            <option value="D">Daily</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2 md:col-span-2 lg:col-span-2">
+                        <label class="block text-sm font-medium text-gray-400">Notes / Raison</label>
+                        <textarea id="notes" rows="1" placeholder="Confluences, analyses..."
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-800">
+                    <button type="submit"
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-lg shadow-green-900/20">
+                        <span>✅</span> Enregistrer
+                    </button>
+                    <button type="button" id="importBtn"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/20">
+                        <span>📋</span> Import Signal
+                    </button>
+                    <button type="button" id="exportBtn"
+                        class="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2">
+                        <span>📥</span> CSV
+                    </button>
+                    <button type="button" id="clearBtn"
+                        class="bg-gray-800 hover:bg-red-900/30 text-red-400 border border-gray-700 hover:border-red-800 px-6 py-2.5 rounded-lg font-medium transition-colors ml-auto flex items-center gap-2">
+                        <span>🗑️</span> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Trades Table -->
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-lg overflow-hidden">
+            <h2 class="text-xl font-semibold text-blue-400 mb-6 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Historique des Trades
+            </h2>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-sm font-medium text-gray-400 bg-gray-800/50">
+                            <th class="p-4 rounded-tl-lg">Date</th>
+                            <th class="p-4">Symbole</th>
+                            <th class="p-4">Direction</th>
+                            <th class="p-4">Signal</th>
+                            <th class="p-4">Entrée</th>
+                            <th class="p-4">R/R</th>
+                            <th class="p-4">Session</th>
+                            <th class="p-4">Résultat</th>
+                            <th class="p-4 rounded-tr-lg text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradesTableBody" class="text-sm divide-y divide-gray-800">
+                        <!-- Rows rendered via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="emptyState" class="hidden text-center py-12 text-gray-500">
+                <p class="text-lg">Aucun trade enregistré.</p>
+                <p class="text-sm">Ajoutez votre première opportunité confirmée !</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+            <h3 class="text-xl font-bold text-white mb-4">📥 Import Signal (JSON)</h3>
+            <p class="text-gray-400 mb-4 text-sm">Copiez le message de l'alerte TradingView (format JSON) et collez-le
+                ici.</p>
+            <textarea id="importJson" rows="5"
+                class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-mono text-xs"
+                placeholder='{"symbol": "EURUSD", ...}'></textarea>
+            <div class="flex justify-end gap-3 mt-6">
+                <button id="cancelImport"
+                    class="px-5 py-2.5 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors">Annuler</button>
+                <button id="confirmImport"
+                    class="px-5 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium">Importer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div
+            class="bg-gray-900 border border-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl transform transition-all">
+            <h3 class="text-xl font-bold text-white mb-4">⚠️ Confirmer la suppression</h3>
+            <p class="text-gray-400 mb-6">Êtes-vous sûr de vouloir supprimer ce trade ? Cette action est irréversible.
+            </p>
+            <div class="flex justify-end gap-3">
+                <button id="cancelDelete"
+                    class="px-5 py-2.5 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors">Annuler</button>
+                <button id="confirmDelete"
+                    class="px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Storage key
+        const STORAGE_KEY = 'ict_trading_journal';
+
+        // Get trades
+        function getTrades() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        // Save trades
+        function saveTrades(trades) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(trades));
+        }
+
+        // Tailwind Batches
+        const badgeBase = "px-2.5 py-1 rounded-full text-xs font-semibold";
+        const badges = {
+            'BUY': 'bg-green-500/20 text-green-400 border border-green-500/30',
+            'SELL': 'bg-red-500/20 text-red-400 border border-red-500/30',
+            'OB': 'bg-teal-500/20 text-teal-400 border border-teal-500/30',
+            'BPR': 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+            'FVG': 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+            'WIN': 'bg-green-500/20 text-green-400 border border-green-500/30',
+            'LOSS': 'bg-red-500/20 text-red-400 border border-red-500/30',
+            'PENDING': 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+            'BE': 'bg-gray-500/20 text-gray-400 border border-gray-500/30',
+        };
+
+        // Render table
+        function renderTrades() {
+            const trades = getTrades();
+            const tbody = document.getElementById('tradesTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            tbody.innerHTML = '';
+
+            if (trades.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            trades.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            trades.forEach((trade, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-800/50 transition-colors group";
+
+                // Risk / Reward Display
+                let rrDisplay = '-';
+                if (trade.stopLoss && trade.takeProfit && trade.entryPrice) {
+                    const entry = parseFloat(trade.entryPrice);
+                    const sl = parseFloat(trade.stopLoss);
+                    const tp = parseFloat(trade.takeProfit);
+                    const risk = Math.abs(entry - sl);
+                    const reward = Math.abs(tp - entry);
+                    if (risk > 0) {
+                        rrDisplay = '1:' + (reward / risk).toFixed(1);
+                    }
+                }
+
+                tr.innerHTML = `
+                    <td class="p-4 whitespace-nowrap text-gray-300 font-mono text-xs">${new Date(trade.date).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+                    <td class="p-4 font-bold text-white">${trade.symbol}</td>
+                    <td class="p-4"><span class="${badgeBase} ${badges[trade.direction]}">${trade.direction}</span></td>
+                    <td class="p-4"><span class="${badgeBase} ${badges[trade.signalType]}">${trade.signalType}</span></td>
+                    <td class="p-4 font-mono text-gray-300">${trade.entryPrice}</td>
+                    <td class="p-4 text-xs text-gray-400">${rrDisplay}</td>
+                    <td class="p-4 text-gray-400 text-xs">${trade.session} (${trade.timeframe})</td>
+                    <td class="p-4"><span class="${badgeBase} ${badges[trade.result]}">${trade.result}</span></td>
+                    <td class="p-4 text-right">
+                        <button onclick="deleteTrade(${index})" class="text-gray-500 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-500/10" title="Supprimer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateStats();
+        }
+
+        // Stats Update
+        function updateStats() {
+            const trades = getTrades();
+            const wins = trades.filter(t => t.result === 'WIN').length;
+            const losses = trades.filter(t => t.result === 'LOSS').length;
+            const total = trades.length;
+            const winRate = total > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : 0;
+
+            // Animation for numbers
+            animateValue("totalTrades", parseInt(document.getElementById("totalTrades").innerText), total, 500);
+            animateValue("winTrades", parseInt(document.getElementById("winTrades").innerText), wins, 500);
+            animateValue("lossTrades", parseInt(document.getElementById("lossTrades").innerText), losses, 500);
+            document.getElementById('winRate').textContent = isNaN(winRate) ? '0%' : winRate + '%';
+        }
+
+        function animateValue(id, start, end, duration) {
+            if (start === end) return;
+            const range = end - start;
+            let current = start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            const obj = document.getElementById(id);
+            const timer = setInterval(() => {
+                current += increment;
+                obj.innerHTML = current;
+                if (current == end) clearInterval(timer);
+            }, stepTime > 0 ? stepTime : 10);
+        }
+
+        // Form Submit
+        document.getElementById('tradeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const trade = {
+                id: Date.now(),
+                date: document.getElementById('tradeDate').value,
+                symbol: document.getElementById('symbol').value.toUpperCase(),
+                direction: document.getElementById('direction').value,
+                signalType: document.getElementById('signalType').value,
+                entryPrice: document.getElementById('entryPrice').value,
+                stopLoss: document.getElementById('stopLoss').value,
+                takeProfit: document.getElementById('takeProfit').value,
+                result: document.getElementById('result').value,
+                session: document.getElementById('session').value,
+                timeframe: document.getElementById('timeframe').value,
+                notes: document.getElementById('notes').value
+            };
+
+            const trades = getTrades();
+            trades.push(trade);
+            saveTrades(trades);
+
+            this.reset();
+            document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 16);
+            renderTrades();
+        });
+
+        // Delete Logic
+        let tradeToDelete = null;
+        const deleteModal = document.getElementById('deleteModal');
+
+        window.deleteTrade = function (index) {
+            // Because we sort the array in display, the index passed here refers to the sorted array
+            // We need to carefully handle deletion or just delete from the raw array if re-sorting happens inside render
+            // The getTrades() gets raw.
+            // renderTrades sorts a copy or we need to find the correct item.
+            // Simplified: Sort first to find the item, then filter it out from storage.
+
+            // For safety in this simple app, we can just grab the ID if we had stored it, OR:
+            // Let's rely on the fact that we render sorted by date desc.
+            const trades = getTrades();
+            trades.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const targetTrade = trades[index];
+
+            // Find this trade in the original storage list (by ID is safest)
+            tradeToDelete = targetTrade.id;
+            deleteModal.classList.remove('hidden');
+            deleteModal.classList.add('flex');
+        }
+
+        document.getElementById('confirmDelete').addEventListener('click', function () {
+            if (tradeToDelete !== null) {
+                let trades = getTrades();
+                trades = trades.filter(t => t.id !== tradeToDelete);
+                saveTrades(trades);
+                renderTrades();
+            }
+            closeModal();
+        });
+
+        document.getElementById('cancelDelete').addEventListener('click', closeModal);
+
+        function closeModal() {
+            deleteModal.classList.add('hidden');
+            deleteModal.classList.remove('flex');
+            tradeToDelete = null;
+        }
+
+        // CSV Export
+        document.getElementById('exportBtn').addEventListener('click', function () {
+            const trades = getTrades();
+            if (trades.length === 0) return alert('Aucun trade à exporter');
+
+            const headers = ['Date', 'Symbole', 'Direction', 'Signal', 'Entrée', 'SL', 'TP', 'Session', 'Timeframe', 'Résultat', 'Notes'];
+            const csvContent = [
+                headers.join(','),
+                ...trades.map(t => [
+                    t.date, t.symbol, t.direction, t.signalType, t.entryPrice, t.stopLoss, t.takeProfit, t.session, t.timeframe, t.result, `"${(t.notes || '').replace(/"/g, '""')}"`
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `ict_journal_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+        });
+
+        // Import Logic
+        const importModal = document.getElementById('importModal');
+        const importBtn = document.getElementById('importBtn');
+        const cancelImport = document.getElementById('cancelImport');
+        const confirmImport = document.getElementById('confirmImport');
+        const importJson = document.getElementById('importJson');
+
+        importBtn.addEventListener('click', () => {
+            importModal.classList.remove('hidden');
+            importModal.classList.add('flex');
+            importJson.focus();
+        });
+
+        cancelImport.addEventListener('click', () => {
+            importModal.classList.add('hidden');
+            importModal.classList.remove('flex');
+        });
+
+        confirmImport.addEventListener('click', () => {
+            try {
+                const data = JSON.parse(importJson.value);
+
+                // Auto-fill form
+                if (data.symbol) document.getElementById('symbol').value = data.symbol;
+                if (data.direction) document.getElementById('direction').value = data.direction.toUpperCase();
+                if (data.signalType) document.getElementById('signalType').value = data.signalType;
+                if (data.entryPrice) document.getElementById('entryPrice').value = data.entryPrice;
+                if (data.stopLoss) document.getElementById('stopLoss').value = data.stopLoss;
+                if (data.takeProfit) document.getElementById('takeProfit').value = data.takeProfit;
+                if (data.session) document.getElementById('session').value = data.session.toUpperCase();
+                // Map timeframe formatting if needed, typically alerts send "15" or "60" or "D"
+                if (data.timeframe) {
+                    const tf = data.timeframe;
+                    // Generic mapping attempt
+                    const options = document.getElementById('timeframe').options;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value === tf || options[i].text.includes(tf)) {
+                            document.getElementById('timeframe').selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                if (data.notes) document.getElementById('notes').value = data.notes;
+
+                // Set Date
+                if (data.date) {
+                    document.getElementById('tradeDate').value = data.date; // Expecting ISO format
+                } else {
+                    document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 16);
+                }
+
+                // Close modal
+                importModal.classList.add('hidden');
+                importModal.classList.remove('flex');
+                importJson.value = '';
+
+                // Visual feedback
+                importBtn.innerHTML = '✅ Imported!';
+                setTimeout(() => { importBtn.innerHTML = '📋 Import Signal'; }, 2000);
+
+            } catch (e) {
+                alert('Erreur: Format JSON invalide.\nAssurez-vous de copier tout le message de l\'alerte.');
+            }
+        });
+
+        // Clear All
+        document.getElementById('clearBtn').addEventListener('click', function () {
+            if (confirm('Tout effacer ?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                renderTrades();
+            }
+        });
+
+        // Init
+        document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 16);
+        renderTrades();
+    </script>
+</body>
+
+</html>
