@@ -92,8 +92,30 @@
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-400">Paire / Symbole</label>
-                        <input type="text" id="symbol" placeholder="EUR/USD" required
-                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all uppercase">
+                        <select id="symbol" required
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                            <option value="" disabled selected>Choisir une paire</option>
+                            <optgroup label="Forex Majors">
+                                <option value="EURUSD">EUR/USD</option>
+                                <option value="GBPUSD">GBP/USD</option>
+                                <option value="USDJPY">USD/JPY</option>
+                                <option value="USDCAD">USD/CAD</option>
+                                <option value="AUDUSD">AUD/USD</option>
+                                <option value="NZDUSD">NZD/USD</option>
+                                <option value="USDCHF">USD/CHF</option>
+                            </optgroup>
+                            <optgroup label="Indices">
+                                <option value="US100">US100 (Nasdaq)</option>
+                                <option value="US500">US500 (S&P)</option>
+                                <option value="US30">US30 (Dow Jones)</option>
+                                <option value="DAX40">DAX40</option>
+                            </optgroup>
+                            <optgroup label="Metals / Crypto">
+                                <option value="XAUUSD">XAU/USD (Gold)</option>
+                                <option value="BTCUSD">BTC/USD</option>
+                                <option value="ETHUSD">ETH/USD</option>
+                            </optgroup>
+                        </select>
                     </div>
 
                     <div class="space-y-2">
@@ -105,31 +127,73 @@
                         </select>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-400">Type de Signal</label>
-                        <select id="signalType" required
-                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
-                            <option value="OB">🔷 Order Block</option>
-                            <option value="BPR">🟣 BPR</option>
-                            <option value="FVG">🟡 FVG</option>
-                        </select>
+                    <div class="space-y-2 relative" id="signalContainer">
+                        <label class="block text-sm font-medium text-gray-400">Type de Signal (Multi)</label>
+                        <!-- Custom Multi Select Button -->
+                        <button type="button" id="signalDropdownBtn"
+                            class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-left flex justify-between items-center group">
+                            <span id="signalSelectedText" class="truncate text-gray-400">Sélectionner...</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 group-hover:text-blue-400 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="signalDropdownList" class="hidden absolute top-full left-0 right-0 mt-1 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-20 max-h-64 overflow-y-auto p-2 space-y-1">
+                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="OB" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                                <span>🔷 Order Block</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="Breaker" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                                <span>🌊 Breaker Block</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="FVG" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                                <span>🟡 FVG</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="BPR" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                                <span>🟣 BPR</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="PO3" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                                <span>⚡ PO3 (Power of 3)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="SMT" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                                <span>🔄 SMT Divergence</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="Killzone" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                                <span>🎯 Killzone</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="Asian" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                                <span>🥢 Asian Range</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="DOP" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                                <span>📅 DOP</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-400">Prix d'Entrée</label>
-                        <input type="number" id="entryPrice" step="0.00001" placeholder="1.0850" required
+                        <input type="number" id="entryPrice" step="0.00001" placeholder="Ex: 1.0850" required
                             class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-400">Stop Loss</label>
-                        <input type="number" id="stopLoss" step="0.00001" placeholder="1.0830"
+                        <input type="number" id="stopLoss" step="0.00001" placeholder="Ex: 1.0830"
                             class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-400">Take Profit</label>
-                        <input type="number" id="takeProfit" step="0.00001" placeholder="1.0890"
+                        <input type="number" id="takeProfit" step="0.00001" placeholder="Ex: 1.0890"
                             class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
                     </div>
 
@@ -182,15 +246,23 @@
                     </button>
                     <button type="button" id="importBtn"
                         class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/20">
-                        <span>📋</span> Import Signal
+                        <span>📋</span> Import
                     </button>
                     <button type="button" id="exportBtn"
                         class="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2">
                         <span>📥</span> CSV
                     </button>
-                    <button type="button" id="clearBtn"
-                        class="bg-gray-800 hover:bg-red-900/30 text-red-400 border border-gray-700 hover:border-red-800 px-6 py-2.5 rounded-lg font-medium transition-colors ml-auto flex items-center gap-2">
-                        <span>🗑️</span> Reset
+                    
+                    <!-- Spacer -->
+                    <div class="flex-grow"></div>
+
+                    <button type="reset" id="resetFormBtn"
+                        class="bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2" title="Vider le formulaire">
+                        <span>🔄</span> Reset Form
+                    </button>
+                    <button type="button" id="clearStorageBtn"
+                        class="bg-red-900/20 hover:bg-red-900/40 text-red-500 border border-red-900/30 px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2" title="Supprimer tout l'historique">
+                        <span>🗑️</span> Tout effacer
                     </button>
                 </div>
             </form>
@@ -214,7 +286,7 @@
                             <th class="p-4 rounded-tl-lg">Date</th>
                             <th class="p-4">Symbole</th>
                             <th class="p-4">Direction</th>
-                            <th class="p-4">Signal</th>
+                            <th class="p-4">Signal(s)</th>
                             <th class="p-4">Entrée</th>
                             <th class="p-4">R/R</th>
                             <th class="p-4">Session</th>
@@ -275,6 +347,56 @@
         // Storage key
         const STORAGE_KEY = 'ict_trading_journal';
 
+        // --- Multi-Select Logic ---
+        const signalDropdownBtn = document.getElementById('signalDropdownBtn');
+        const signalDropdownList = document.getElementById('signalDropdownList');
+        const signalCheckboxes = document.querySelectorAll('.signal-checkbox');
+        const signalSelectedText = document.getElementById('signalSelectedText');
+        
+        let selectedSignals = [];
+
+        // Toggle Dropdown
+        signalDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            signalDropdownList.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!signalDropdownBtn.contains(e.target) && !signalDropdownList.contains(e.target)) {
+                signalDropdownList.classList.add('hidden');
+            }
+        });
+
+        // Handle Checkbox Changes
+        function updateSelectedSignals() {
+            selectedSignals = Array.from(signalCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+            if (selectedSignals.length === 0) {
+                signalSelectedText.textContent = 'Sélectionner...';
+                signalSelectedText.classList.add('text-gray-400');
+                signalSelectedText.classList.remove('text-white');
+            } else {
+                signalSelectedText.textContent = selectedSignals.join(', ');
+                signalSelectedText.classList.remove('text-gray-400');
+                signalSelectedText.classList.add('text-white');
+            }
+        }
+
+        signalCheckboxes.forEach(cb => {
+            cb.addEventListener('change', updateSelectedSignals);
+        });
+
+        // Reset Signals Visuals
+        function resetSignals() {
+            signalCheckboxes.forEach(cb => cb.checked = false);
+            updateSelectedSignals();
+        }
+
+        // --- Data Logic ---
+
         // Get trades
         function getTrades() {
             const data = localStorage.getItem(STORAGE_KEY);
@@ -286,19 +408,33 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(trades));
         }
 
-        // Tailwind Batches
-        const badgeBase = "px-2.5 py-1 rounded-full text-xs font-semibold";
-        const badges = {
-            'BUY': 'bg-green-500/20 text-green-400 border border-green-500/30',
-            'SELL': 'bg-red-500/20 text-red-400 border border-red-500/30',
-            'OB': 'bg-teal-500/20 text-teal-400 border border-teal-500/30',
-            'BPR': 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
-            'FVG': 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
-            'WIN': 'bg-green-500/20 text-green-400 border border-green-500/30',
-            'LOSS': 'bg-red-500/20 text-red-400 border border-red-500/30',
-            'PENDING': 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
-            'BE': 'bg-gray-500/20 text-gray-400 border border-gray-500/30',
+        // Tailwind Badges configuration
+        const badgeBase = "px-2 py-0.5 rounded text-[10px] font-semibold border mr-1 mb-1 inline-block";
+        const badgesColors = {
+            'BUY': 'bg-green-500/10 text-green-400 border-green-500/20',
+            'SELL': 'bg-red-500/10 text-red-400 border-red-500/20',
+            
+            // Signals
+            'OB': 'bg-teal-500/10 text-teal-400 border-teal-500/20',
+            'BPR': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+            'FVG': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+            'Breaker': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+            'PO3': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+            'SMT': 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+            'Asian': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+            'Killzone': 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+            'DOP': 'bg-gray-500/10 text-gray-300 border-gray-500/20',
+            
+            // Results
+            'WIN': 'bg-green-500/20 text-green-400 border-green-500/30',
+            'LOSS': 'bg-red-500/20 text-red-400 border-red-500/30',
+            'PENDING': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+            'BE': 'bg-gray-500/20 text-gray-400 border-gray-500/30',
         };
+
+        function getBadgeClass(key) {
+           return badgesColors[key] || 'bg-gray-700 text-gray-300 border-gray-600';
+        }
 
         // Render table
         function renderTrades() {
@@ -310,13 +446,14 @@
 
             if (trades.length === 0) {
                 emptyState.classList.remove('hidden');
+                updateStats();
                 return;
             }
 
             emptyState.classList.add('hidden');
             trades.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            trades.forEach((trade, index) => {
+            trades.forEach((trade) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-800/50 transition-colors group";
 
@@ -333,17 +470,27 @@
                     }
                 }
 
+                // Render Signals (Handle array or legacy string)
+                let signalsHtml = '';
+                const signals = Array.isArray(trade.signalType) ? trade.signalType : [trade.signalType];
+                
+                signals.forEach(sig => {
+                    if(!sig) return;
+                    signalsHtml += `<span class="${badgeBase} ${getBadgeClass(sig)}">${sig}</span>`;
+                });
+
+
                 tr.innerHTML = `
                     <td class="p-4 whitespace-nowrap text-gray-300 font-mono text-xs">${new Date(trade.date).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
                     <td class="p-4 font-bold text-white">${trade.symbol}</td>
-                    <td class="p-4"><span class="${badgeBase} ${badges[trade.direction]}">${trade.direction}</span></td>
-                    <td class="p-4"><span class="${badgeBase} ${badges[trade.signalType]}">${trade.signalType}</span></td>
+                    <td class="p-4"><span class="${badgeBase} ${getBadgeClass(trade.direction)}">${trade.direction}</span></td>
+                    <td class="p-4 text-xs">${signalsHtml}</td>
                     <td class="p-4 font-mono text-gray-300">${trade.entryPrice}</td>
                     <td class="p-4 text-xs text-gray-400">${rrDisplay}</td>
                     <td class="p-4 text-gray-400 text-xs">${trade.session} (${trade.timeframe})</td>
-                    <td class="p-4"><span class="${badgeBase} ${badges[trade.result]}">${trade.result}</span></td>
+                    <td class="p-4"><span class="${badgeBase} ${getBadgeClass(trade.result)}">${trade.result}</span></td>
                     <td class="p-4 text-right">
-                        <button onclick="deleteTrade(${index})" class="text-gray-500 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-500/10" title="Supprimer">
+                        <button onclick="deleteTrade(${trade.id})" class="text-gray-500 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-500/10" title="Supprimer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -362,39 +509,30 @@
             const wins = trades.filter(t => t.result === 'WIN').length;
             const losses = trades.filter(t => t.result === 'LOSS').length;
             const total = trades.length;
-            const winRate = total > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : 0;
+            const winRate = (wins + losses) > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : 0;
 
-            // Animation for numbers
-            animateValue("totalTrades", parseInt(document.getElementById("totalTrades").innerText), total, 500);
-            animateValue("winTrades", parseInt(document.getElementById("winTrades").innerText), wins, 500);
-            animateValue("lossTrades", parseInt(document.getElementById("lossTrades").innerText), losses, 500);
-            document.getElementById('winRate').textContent = isNaN(winRate) ? '0%' : winRate + '%';
-        }
-
-        function animateValue(id, start, end, duration) {
-            if (start === end) return;
-            const range = end - start;
-            let current = start;
-            const increment = end > start ? 1 : -1;
-            const stepTime = Math.abs(Math.floor(duration / range));
-            const obj = document.getElementById(id);
-            const timer = setInterval(() => {
-                current += increment;
-                obj.innerHTML = current;
-                if (current == end) clearInterval(timer);
-            }, stepTime > 0 ? stepTime : 10);
+            document.getElementById("totalTrades").innerText = total;
+            document.getElementById("winTrades").innerText = wins;
+            document.getElementById("lossTrades").innerText = losses;
+            document.getElementById("winRate").innerText = winRate + '%';
         }
 
         // Form Submit
         document.getElementById('tradeForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
+            // Validation: at least one signal
+            if(selectedSignals.length === 0) {
+                alert("Veuillez sélectionner au moins un type de signal.");
+                return;
+            }
+
             const trade = {
                 id: Date.now(),
                 date: document.getElementById('tradeDate').value,
-                symbol: document.getElementById('symbol').value.toUpperCase(),
+                symbol: document.getElementById('symbol').value,
                 direction: document.getElementById('direction').value,
-                signalType: document.getElementById('signalType').value,
+                signalType: [...selectedSignals], // Store array copy
                 entryPrice: document.getElementById('entryPrice').value,
                 stopLoss: document.getElementById('stopLoss').value,
                 takeProfit: document.getElementById('takeProfit').value,
@@ -409,37 +547,33 @@
             saveTrades(trades);
 
             this.reset();
+            resetSignals();
             document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 16);
             renderTrades();
         });
 
+        // Form Reset Event (Triggered by Reset Button)
+        document.getElementById('tradeForm').addEventListener('reset', function() {
+            setTimeout(() => {
+                 document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 16);
+                 resetSignals();
+            }, 10);
+        });
+
         // Delete Logic
-        let tradeToDelete = null;
+        let tradeToDeleteId = null;
         const deleteModal = document.getElementById('deleteModal');
 
-        window.deleteTrade = function (index) {
-            // Because we sort the array in display, the index passed here refers to the sorted array
-            // We need to carefully handle deletion or just delete from the raw array if re-sorting happens inside render
-            // The getTrades() gets raw.
-            // renderTrades sorts a copy or we need to find the correct item.
-            // Simplified: Sort first to find the item, then filter it out from storage.
-
-            // For safety in this simple app, we can just grab the ID if we had stored it, OR:
-            // Let's rely on the fact that we render sorted by date desc.
-            const trades = getTrades();
-            trades.sort((a, b) => new Date(b.date) - new Date(a.date));
-            const targetTrade = trades[index];
-
-            // Find this trade in the original storage list (by ID is safest)
-            tradeToDelete = targetTrade.id;
+        window.deleteTrade = function (id) {
+            tradeToDeleteId = id;
             deleteModal.classList.remove('hidden');
             deleteModal.classList.add('flex');
         }
 
         document.getElementById('confirmDelete').addEventListener('click', function () {
-            if (tradeToDelete !== null) {
+            if (tradeToDeleteId !== null) {
                 let trades = getTrades();
-                trades = trades.filter(t => t.id !== tradeToDelete);
+                trades = trades.filter(t => t.id !== tradeToDeleteId);
                 saveTrades(trades);
                 renderTrades();
             }
@@ -451,7 +585,7 @@
         function closeModal() {
             deleteModal.classList.add('hidden');
             deleteModal.classList.remove('flex');
-            tradeToDelete = null;
+            tradeToDeleteId = null;
         }
 
         // CSV Export
@@ -462,9 +596,12 @@
             const headers = ['Date', 'Symbole', 'Direction', 'Signal', 'Entrée', 'SL', 'TP', 'Session', 'Timeframe', 'Résultat', 'Notes'];
             const csvContent = [
                 headers.join(','),
-                ...trades.map(t => [
-                    t.date, t.symbol, t.direction, t.signalType, t.entryPrice, t.stopLoss, t.takeProfit, t.session, t.timeframe, t.result, `"${(t.notes || '').replace(/"/g, '""')}"`
-                ].join(','))
+                ...trades.map(t => {
+                   const sigs = Array.isArray(t.signalType) ? t.signalType.join('+') : t.signalType;
+                   return [
+                        t.date, t.symbol, t.direction, sigs, t.entryPrice, t.stopLoss, t.takeProfit, t.session, t.timeframe, t.result, `"${(t.notes || '').replace(/"/g, '""')}"`
+                   ].join(',')
+                })
             ].join('\n');
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -497,17 +634,25 @@
                 const data = JSON.parse(importJson.value);
 
                 // Auto-fill form
-                if (data.symbol) document.getElementById('symbol').value = data.symbol;
+                if (data.symbol) document.getElementById('symbol').value = data.symbol.replace('/','');
                 if (data.direction) document.getElementById('direction').value = data.direction.toUpperCase();
-                if (data.signalType) document.getElementById('signalType').value = data.signalType;
+                
+                // Signal - Handle array or single
+                if (data.signalType) {
+                    const importedSignals = Array.isArray(data.signalType) ? data.signalType : [data.signalType];
+                    signalCheckboxes.forEach(cb => {
+                        cb.checked = importedSignals.includes(cb.value);
+                    });
+                    updateSelectedSignals();
+                }
+
                 if (data.entryPrice) document.getElementById('entryPrice').value = data.entryPrice;
                 if (data.stopLoss) document.getElementById('stopLoss').value = data.stopLoss;
                 if (data.takeProfit) document.getElementById('takeProfit').value = data.takeProfit;
                 if (data.session) document.getElementById('session').value = data.session.toUpperCase();
-                // Map timeframe formatting if needed, typically alerts send "15" or "60" or "D"
+                
                 if (data.timeframe) {
                     const tf = data.timeframe;
-                    // Generic mapping attempt
                     const options = document.getElementById('timeframe').options;
                     for (let i = 0; i < options.length; i++) {
                         if (options[i].value === tf || options[i].text.includes(tf)) {
@@ -517,31 +662,25 @@
                     }
                 }
                 if (data.notes) document.getElementById('notes').value = data.notes;
+                if (data.date) document.getElementById('tradeDate').value = data.date;
+                else document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 16);
 
-                // Set Date
-                if (data.date) {
-                    document.getElementById('tradeDate').value = data.date; // Expecting ISO format
-                } else {
-                    document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 16);
-                }
-
-                // Close modal
                 importModal.classList.add('hidden');
                 importModal.classList.remove('flex');
                 importJson.value = '';
 
-                // Visual feedback
-                importBtn.innerHTML = '✅ Imported!';
-                setTimeout(() => { importBtn.innerHTML = '📋 Import Signal'; }, 2000);
+                importBtn.innerHTML = '<span>✅</span> Importé!';
+                setTimeout(() => { importBtn.innerHTML = '<span>📋</span> Import'; }, 2000);
 
             } catch (e) {
-                alert('Erreur: Format JSON invalide.\nAssurez-vous de copier tout le message de l\'alerte.');
+                alert('Erreur: Format JSON invalide.');
+                console.error(e);
             }
         });
 
-        // Clear All
-        document.getElementById('clearBtn').addEventListener('click', function () {
-            if (confirm('Tout effacer ?')) {
+        // Clear All Data
+        document.getElementById('clearStorageBtn').addEventListener('click', function () {
+            if (confirm('⚠️ ATTENTION : Cela va supprimer TOUT l\'historique des trades.\n\nÊtes-vous sûr ?')) {
                 localStorage.removeItem(STORAGE_KEY);
                 renderTrades();
             }
