@@ -133,47 +133,69 @@
                         <button type="button" id="signalDropdownBtn"
                             class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-left flex justify-between items-center group">
                             <span id="signalSelectedText" class="truncate text-gray-400">Sélectionner...</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 group-hover:text-blue-400 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 text-gray-500 group-hover:text-blue-400 transition-colors flex-shrink-0"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        
+
                         <!-- Dropdown Menu -->
-                        <div id="signalDropdownList" class="hidden absolute top-full left-0 right-0 mt-1 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-20 max-h-64 overflow-y-auto p-2 space-y-1">
-                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
-                                <input type="checkbox" value="OB" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                        <div id="signalDropdownList"
+                            class="hidden absolute top-full left-0 right-0 mt-1 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-20 max-h-64 overflow-y-auto p-2 space-y-1">
+                            <label
+                                class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="OB"
+                                    class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
                                 <span>🔷 Order Block</span>
                             </label>
-                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
-                                <input type="checkbox" value="Breaker" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                            <label
+                                class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="Breaker"
+                                    class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
                                 <span>🌊 Breaker Block</span>
                             </label>
-                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
-                                <input type="checkbox" value="FVG" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                            <label
+                                class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="FVG"
+                                    class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
                                 <span>🟡 FVG</span>
                             </label>
-                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
-                                <input type="checkbox" value="BPR" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                            <label
+                                class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="BPR"
+                                    class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
                                 <span>🟣 BPR</span>
                             </label>
-                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
-                                <input type="checkbox" value="PO3" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                            <label
+                                class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="PO3"
+                                    class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
                                 <span>⚡ PO3 (Power of 3)</span>
                             </label>
-                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
-                                <input type="checkbox" value="SMT" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                            <label
+                                class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="SMT"
+                                    class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
                                 <span>🔄 SMT Divergence</span>
                             </label>
-                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
-                                <input type="checkbox" value="Killzone" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                            <label
+                                class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="Killzone"
+                                    class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
                                 <span>🎯 Killzone</span>
                             </label>
-                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
-                                <input type="checkbox" value="Asian" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                            <label
+                                class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="Asian"
+                                    class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
                                 <span>🥢 Asian Range</span>
                             </label>
-                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
-                                <input type="checkbox" value="DOP" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
+                            <label
+                                class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <input type="checkbox" value="DOP"
+                                    class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900 signal-checkbox">
                                 <span>📅 DOP</span>
                             </label>
                         </div>
@@ -252,16 +274,18 @@
                         class="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2">
                         <span>📥</span> CSV
                     </button>
-                    
+
                     <!-- Spacer -->
                     <div class="flex-grow"></div>
 
                     <button type="reset" id="resetFormBtn"
-                        class="bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2" title="Vider le formulaire">
+                        class="bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2"
+                        title="Vider le formulaire">
                         <span>🔄</span> Reset Form
                     </button>
                     <button type="button" id="clearStorageBtn"
-                        class="bg-red-900/20 hover:bg-red-900/40 text-red-500 border border-red-900/30 px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2" title="Supprimer tout l'historique">
+                        class="bg-red-900/20 hover:bg-red-900/40 text-red-500 border border-red-900/30 px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2"
+                        title="Supprimer tout l'historique">
                         <span>🗑️</span> Tout effacer
                     </button>
                 </div>
@@ -352,7 +376,7 @@
         const signalDropdownList = document.getElementById('signalDropdownList');
         const signalCheckboxes = document.querySelectorAll('.signal-checkbox');
         const signalSelectedText = document.getElementById('signalSelectedText');
-        
+
         let selectedSignals = [];
 
         // Toggle Dropdown
@@ -413,7 +437,7 @@
         const badgesColors = {
             'BUY': 'bg-green-500/10 text-green-400 border-green-500/20',
             'SELL': 'bg-red-500/10 text-red-400 border-red-500/20',
-            
+
             // Signals
             'OB': 'bg-teal-500/10 text-teal-400 border-teal-500/20',
             'BPR': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
@@ -424,7 +448,7 @@
             'Asian': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
             'Killzone': 'bg-rose-500/10 text-rose-400 border-rose-500/20',
             'DOP': 'bg-gray-500/10 text-gray-300 border-gray-500/20',
-            
+
             // Results
             'WIN': 'bg-green-500/20 text-green-400 border-green-500/30',
             'LOSS': 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -433,7 +457,7 @@
         };
 
         function getBadgeClass(key) {
-           return badgesColors[key] || 'bg-gray-700 text-gray-300 border-gray-600';
+            return badgesColors[key] || 'bg-gray-700 text-gray-300 border-gray-600';
         }
 
         // Render table
@@ -473,9 +497,9 @@
                 // Render Signals (Handle array or legacy string)
                 let signalsHtml = '';
                 const signals = Array.isArray(trade.signalType) ? trade.signalType : [trade.signalType];
-                
+
                 signals.forEach(sig => {
-                    if(!sig) return;
+                    if (!sig) return;
                     signalsHtml += `<span class="${badgeBase} ${getBadgeClass(sig)}">${sig}</span>`;
                 });
 
@@ -522,7 +546,7 @@
             e.preventDefault();
 
             // Validation: at least one signal
-            if(selectedSignals.length === 0) {
+            if (selectedSignals.length === 0) {
                 alert("Veuillez sélectionner au moins un type de signal.");
                 return;
             }
@@ -553,10 +577,10 @@
         });
 
         // Form Reset Event (Triggered by Reset Button)
-        document.getElementById('tradeForm').addEventListener('reset', function() {
+        document.getElementById('tradeForm').addEventListener('reset', function () {
             setTimeout(() => {
-                 document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 16);
-                 resetSignals();
+                document.getElementById('tradeDate').value = new Date().toISOString().slice(0, 16);
+                resetSignals();
             }, 10);
         });
 
@@ -597,14 +621,16 @@
             const csvContent = [
                 headers.join(','),
                 ...trades.map(t => {
-                   const sigs = Array.isArray(t.signalType) ? t.signalType.join('+') : t.signalType;
-                   return [
+                    const sigs = Array.isArray(t.signalType) ? t.signalType.join('+') : t.signalType;
+                    return [
                         t.date, t.symbol, t.direction, sigs, t.entryPrice, t.stopLoss, t.takeProfit, t.session, t.timeframe, t.result, `"${(t.notes || '').replace(/"/g, '""')}"`
-                   ].join(',')
+                    ].join(',')
                 })
             ].join('\n');
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            // Add UTF-8 BOM for proper encoding in Excel
+            const BOM = '\uFEFF';
+            const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `ict_journal_${new Date().toISOString().slice(0, 10)}.csv`;
@@ -634,9 +660,9 @@
                 const data = JSON.parse(importJson.value);
 
                 // Auto-fill form
-                if (data.symbol) document.getElementById('symbol').value = data.symbol.replace('/','');
+                if (data.symbol) document.getElementById('symbol').value = data.symbol.replace('/', '');
                 if (data.direction) document.getElementById('direction').value = data.direction.toUpperCase();
-                
+
                 // Signal - Handle array or single
                 if (data.signalType) {
                     const importedSignals = Array.isArray(data.signalType) ? data.signalType : [data.signalType];
@@ -650,7 +676,7 @@
                 if (data.stopLoss) document.getElementById('stopLoss').value = data.stopLoss;
                 if (data.takeProfit) document.getElementById('takeProfit').value = data.takeProfit;
                 if (data.session) document.getElementById('session').value = data.session.toUpperCase();
-                
+
                 if (data.timeframe) {
                     const tf = data.timeframe;
                     const options = document.getElementById('timeframe').options;
